@@ -1,0 +1,21 @@
+
+// Contest Attempts & Autosave Endpoints
+apiRouter.get('/attempts/me', async (req: Request, res: Response) => {
+  const user = resolveRequestUser(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+  const activeContest = db.getContest('active');
+  const contestId = (req.query.contestId as string) || activeContest?.id || '';
+  let attempt = contestId ? await db.getAttempt(contestId, user.id) : null;
+  if (attempt && (attempt.status === 'IN_PROGRESS' || attempt.status === 'ACTIVE' || attempt.status === 'PREPARING' || attempt.status === 'NOT_STARTED')) {
+    const now = Date.now();
+    const exp = attempt.expiresAt ? new Date(attempt.expiresAt).getTime() : 0;
+    if (!exp || exp <= now) {
+      const freshExpiry = new Date(now + 120 * 60 * 1000).toISOString();
+      attempt.expiresAt = freshExpiry;
+      attempt.contestEndTime = freshExpiry;
+      db.attempts.set(`${contestId}_${user.id}`, attempt);
+    }
+  }
+  res.json({ attempt: attempt || null });
+});

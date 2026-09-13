@@ -1,0 +1,6 @@
+{
+  "name": "CodeArena - Secure Contest Portal",
+  "description": "Secure, automated & scalable online coding contest portal with Monaco Editor, sandbox judging queue, anti-cheat enforcement, and multi-batch management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

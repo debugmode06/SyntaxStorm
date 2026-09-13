@@ -1,0 +1,17 @@
+--- server/api.ts
++++ server/api.ts
+@@ -1463,14 +1463,2 @@
+   let attempt = contestId ? await db.getAttempt(contestId, user.id) : null;
+-
+-  if (attempt && (attempt.status === 'IN_PROGRESS' || attempt.status === 'ACTIVE' || attempt.status === 'PREPARING' || attempt.status === 'NOT_STARTED')) {
+-    const now = Date.now();
+-    const exp = attempt.expiresAt ? new Date(attempt.expiresAt).getTime() : 0;
+-    if (!exp || exp <= now) {
+-      const freshExpiry = new Date(now + 120 * 60 * 1000).toISOString();
+-      attempt.expiresAt = freshExpiry;
+-      attempt.contestEndTime = freshExpiry;
+-      db.attempts.set(`${contestId}_${user.id}`, attempt);
+-    }
+-  }
+-
+   res.json({ attempt: attempt || null });
